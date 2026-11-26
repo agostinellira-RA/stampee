@@ -402,23 +402,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       };
     }
 
-const { data, error } = await supabase.functions.invoke("staff-admin", {
-  body: {
-    action: "create",
-    email: payload.email.trim().toLowerCase(),
-    pin: payload.pin,
-    name: payload.name.trim(),
-  },
-});
-
-if (error) {
-  console.error("Staff creation error:", error);
-  return { ok: false, error: "No se pudo crear el empleado." };
-}
-
-if (data?.error) {
-  return { ok: false, error: data.error };
-}
+    const { error } = await supabase.rpc("create_staff_account", {
+      staff_email: payload.email.trim().toLowerCase(),
+      staff_pin: payload.pin,
+      staff_name: payload.name.trim(),
+    });
 
     if (error) return { ok: false, error: STAFF_ACTION_ERROR };
     setStaffAccounts(await fetchStaffAccounts(currentOwner.id));
